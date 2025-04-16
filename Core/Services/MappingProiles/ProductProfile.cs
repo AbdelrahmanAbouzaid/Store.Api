@@ -14,8 +14,10 @@ namespace Services.MappingProiles
         public ProductProfile()
         {
             CreateMap<Product, ProductResultDto>()
-                .ForMember(p=>p.BrandName, o=> o.MapFrom(o=>o.ProductBrand.Name))
-                .ForMember(p=>p.TypeName, o=> o.MapFrom(o=>o.ProductType.Name));
+                .ForMember(d=>d.BrandName, o=> o.MapFrom(s=>s.ProductBrand.Name))
+                .ForMember(d=>d.TypeName, o=> o.MapFrom(s=>s.ProductType.Name))
+                //.ForMember(d=>d.PictureUrl,o=> o.MapFrom(s=>$"https://localhost:7170/{s.PictureUrl}"));
+                .ForMember(d=>d.PictureUrl,o=> o.MapFrom<PictureUrlResolver>());
 
             CreateMap<ProductBrand, BrandResultDto>();
             CreateMap<ProductType, TypeResultDto>();
