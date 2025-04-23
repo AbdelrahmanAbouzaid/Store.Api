@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Shared;
 using System;
@@ -14,6 +15,7 @@ namespace Presentation
     public class ProductsController(IServiceManager serviceManager) : ControllerBase
     {
         [HttpGet]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllProduct([FromQuery] ProductSpecificationParameters productSpecs)
         {
             var products = await serviceManager.ProductServices.GetAllProductsAsync(productSpecs);
