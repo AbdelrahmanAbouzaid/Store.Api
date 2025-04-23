@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
+using Domain.Exceptions;
 using Domain.Models;
 using Services.Abstractions;
 using Services.Specifications;
@@ -34,7 +35,7 @@ namespace Services
             var spec = new ProductWithBrandAndTypeSpecification(id);
 
             var product = await unitOfWork.GetRepository<Product, int>().GetAsync(spec);
-            if (product == null) return null;
+            if (product == null) throw new ProductNotFoundException(id);
             return mapper.Map<ProductResultDto>(product);
         }
         public async Task<IEnumerable<BrandResultDto>> GetAllBrandsAsync()
