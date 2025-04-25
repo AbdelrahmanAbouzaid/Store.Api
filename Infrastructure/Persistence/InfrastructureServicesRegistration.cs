@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Persistence.Data;
+using Persistence.Identity;
 using Persistence.Repositories;
 using StackExchange.Redis;
 using System;
@@ -24,9 +25,16 @@ namespace Persistence
                 option.UseSqlServer(configuration.GetConnectionString("DefualtConnection"));
             });
 
+            services.AddDbContext<StoreIdentityDbContext>(option =>
+            {
+                option.UseSqlServer(configuration.GetConnectionString("IdentityConnection"));
+            });
+
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<ICacheRepository, CacheRepository>();
+
 
             services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
             {
