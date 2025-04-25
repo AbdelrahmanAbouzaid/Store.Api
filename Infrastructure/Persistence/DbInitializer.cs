@@ -1,7 +1,10 @@
 ﻿using Domain.Contracts;
 using Domain.Models;
+using Domain.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
+using Persistence.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +14,11 @@ using System.Threading.Tasks;
 
 namespace Persistence
 {
-    public class DbInitializer(StoreContext context) : IDbInitializer
+    public class DbInitializer(StoreContext context,
+        StoreIdentityDbContext identityDbContext,
+        UserManager<AppUser> userManager,
+        RoleManager<IdentityRole> roleManager) 
+        : IDbInitializer
     {
         public async Task InitializeAsync()
         {
@@ -68,6 +75,46 @@ namespace Persistence
                 }
             }
 
+        }
+
+        public async Task InitializeIdentityAsync()
+        {
+            if (identityDbContext.Database.GetPendingMigrations().Any())
+            {
+                await identityDbContext.Database.MigrateAsync();
+            }
+
+            if (!roleManager.Roles.Any())
+            {
+                await roleManager.CreateAsync(new IdentityRole { Name = "Admin"});
+                await roleManager.CreateAsync(new IdentityRole { Name = "SuperAdmin"});
+            }
+
+            if (!userManager.Users.Any())
+            {
+                var admin = new AppUser
+                {
+                    DisplayName = "Admin",
+                    Email = "admin@gmail.com",
+                    UserName = "Admin",
+                    PhoneNumber = "01234567893",
+
+                };
+                var superAdmin = new AppUser
+                {
+                    DisplayName = "Super Admin",
+                    Email = "SuperAdmin@gmail.com",
+                    UserName = "SuperAdmin",
+                    PhoneNumber = "01234567893",
+
+                };
+
+                await userManager.CreateAsync(admin, "P@ssw0rd");
+                await userManager.CreateAsync(superAdmin, "P@ssw0rd");
+
+                await userManager.AddToRoleAsync(admin, "Admin");
+                await userManager.AddToRoleAsync(superAdmin, "SuperAdmin");
+            }
         }
     }
 }

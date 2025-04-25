@@ -31,13 +31,22 @@ namespace Store.Api.Middlewares
                 {
                     NotFoundException => StatusCodes.Status404NotFound,
                     BadRequestException => StatusCodes.Status400BadRequest,
+                    UnAuthorizedException => StatusCodes.Status401Unauthorized,
+                    ValidationException => HandelValidationException((ValidationException)ex, response),
                     _ => StatusCodes.Status500InternalServerError
-                }; 
+                };
 
                 context.Response.StatusCode = response.StatusCode;
 
                 await context.Response.WriteAsJsonAsync(response);
             }
+        }
+
+        private int HandelValidationException(ValidationException exception, ErrorDetails response)
+        {
+            response.Errors = exception.Errors;
+
+            return StatusCodes.Status400BadRequest;
         }
     }
 }
