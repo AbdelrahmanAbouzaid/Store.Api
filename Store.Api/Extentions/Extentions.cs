@@ -1,12 +1,16 @@
 ﻿using Domain.Contracts;
 using Domain.Models.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using Persistence.Identity;
 using Services;
+using Shared;
 using Shared.ModelErrors;
 using Store.Api.Middlewares;
+using System.Text;
 
 namespace Store.Api.Extentions
 {
@@ -25,7 +29,9 @@ namespace Store.Api.Extentions
 
             services.IdentityServices();
 
-            services.AddApplicationServices();
+            services.AddApplicationServices(configuration);
+
+            services.ConfigureJwtServices(configuration);
 
             services.Configure<ApiBehaviorOptions>(config =>
             {
@@ -46,6 +52,30 @@ namespace Store.Api.Extentions
                 };
             });
 
+            return services;
+        }
+
+        public static IServiceCollection ConfigureJwtServices(this IServiceCollection services, IConfiguration configuration)
+        {
+
+            var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+                };
+            });
             return services;
         }
         public static IServiceCollection IdentityServices(this IServiceCollection services)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Attributes;
 using Services.Abstractions;
@@ -18,6 +19,7 @@ namespace Presentation
         [HttpGet]
         [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status200OK)]
         [Cache(100)]
+        [Authorize]
         public async Task<IActionResult> GetAllProduct([FromQuery] ProductSpecificationParameters productSpecs)
         {
             var products = await serviceManager.ProductServices.GetAllProductsAsync(productSpecs);
