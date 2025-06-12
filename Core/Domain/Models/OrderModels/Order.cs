@@ -11,7 +11,7 @@ namespace Domain.Models.OrderModels
     {
         public Order()
         {
-            
+
         }
         public Order(string userEmail, Address shippingAddress, ICollection<OrderItem> orderItems, DeliveryMethod deliveryMethod, decimal subTotal, string paymentIntentId)
         {
@@ -28,7 +28,7 @@ namespace Domain.Models.OrderModels
 
         public Address ShippingAddress { get; set; }
 
-        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public ICollection<OrderItem> OrderItems { get; set; } = [];
 
         public DeliveryMethod DeliveryMethod { get; set; }
         public int? DeliveryMethodId { get; set; }
