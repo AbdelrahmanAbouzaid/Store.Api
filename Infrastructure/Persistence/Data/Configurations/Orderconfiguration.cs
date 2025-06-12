@@ -20,7 +20,10 @@ namespace Persistence.Data.Configurations
             builder.HasOne(o => o.DeliveryMethod).WithMany()
                 .OnDelete(DeleteBehavior.SetNull);
 
+            builder.Property(s => s.PaymentStatus)
+                .HasConversion(s => s.ToString(), s => Enum.Parse<OrderPaymentStatus>(s));
 
+            builder.Property(s => s.SubTotal).HasColumnType("decimal(18,4)");
         }
     }
 }
