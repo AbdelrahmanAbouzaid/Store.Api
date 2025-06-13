@@ -19,7 +19,6 @@ namespace Presentation
         [HttpGet]
         [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status200OK)]
         [Cache(100)]
-        [Authorize]
         public async Task<IActionResult> GetAllProduct([FromQuery] ProductSpecificationParameters productSpecs)
         {
             var products = await serviceManager.ProductServices.GetAllProductsAsync(productSpecs);
