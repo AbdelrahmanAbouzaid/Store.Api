@@ -13,6 +13,6 @@ namespace Services.Abstractions
         ICacheServices CacheServices { get; }
         IAuthServices AuthServices { get; }
         IOrderServices OrderServices { get; }
-
+        IPaymentServices PaymentServices { get; }
     }
 }

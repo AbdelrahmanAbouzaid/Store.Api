@@ -52,6 +52,15 @@ namespace Store.Api.Extentions
                 };
             });
 
+            services.AddCors(config =>
+            {
+                config.AddPolicy("MyPolicy", options =>
+                {
+                    options.AllowAnyHeader();
+                    options.AllowAnyMethod();
+                    options.AllowAnyOrigin();
+                });
+            });
             return services;
         }
 
@@ -98,6 +107,8 @@ namespace Store.Api.Extentions
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("MyPolicy");
 
             app.UseStaticFiles();
 

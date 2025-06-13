@@ -6,11 +6,6 @@ using Domain.Models.OrderModels;
 using Services.Abstractions;
 using Services.Specifications;
 using Shared.OrderModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services
 {
@@ -49,8 +44,11 @@ namespace Services
             var subTotal = items.Sum(i => i.Quentity * i.Price);
 
             //4.TODO:: Payment
+            var orderSpec = new OrderWithPaymentIntentSpecification(basket.PaymentIntentId);
+            var existOrder = await unitOfWork.GetRepository<Order, Guid>().GetAsync(orderSpec);
+            if(existOrder is not null) unitOfWork.GetRepository<Order, Guid>().Delete(existOrder);
 
-            var order = new Order(email,address,items, deliveryMethod, subTotal,"");
+            var order = new Order(email,address,items, deliveryMethod, subTotal,basket.PaymentIntentId);
             await unitOfWork.GetRepository<Order, Guid>().AddAsync(order);
             await unitOfWork.SaveChangesAsync();
 

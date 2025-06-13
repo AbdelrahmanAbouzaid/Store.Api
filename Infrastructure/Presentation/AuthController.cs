@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Shared;
+using Shared.OrderModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,5 +30,38 @@ namespace Presentation
             return Ok(userResult);
         }
 
+        [HttpGet("EmailExists")]
+        public async Task<IActionResult> CkeckEmailExist(string email)
+        {
+            var result = await serviceManager.AuthServices.CheckEmailExistAsync(email);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var result = await serviceManager.AuthServices.GetCurrentUserAsync(email);
+            return Ok(result);
+        }
+
+        [HttpGet("address")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUserAddress()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var result = await serviceManager.AuthServices.GetCurrentUserAddressAsync(email);
+            return Ok(result);
+        }
+
+        [HttpPut("address")]
+        [Authorize]
+        public async Task<IActionResult> UpdateCurrentUserAddress(AddressDto addressDto)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var result = await serviceManager.AuthServices.UpdateCurrentUserAddressAsync(addressDto, email);
+            return Ok(result);
+        }
     }
 }
